@@ -53,4 +53,40 @@ RSpec.describe "basic behavior", type: :request do
       )
     )
   end
+
+  context "public exceptions" do
+    around do |example|
+      show_detailed_exceptions(false) { example.run }
+    end
+
+    it "handles public exceptions for HTML requests" do
+      handle_request_exceptions do
+        get "/rescue"
+      end
+
+      expect(response.status).to eq(401)
+      expect(response.content_type).to eq("text/html")
+      expect(response.body).to include("You have to log in")
+    end
+
+    it "handles public exceptions for JSON requests" do
+      handle_request_exceptions do
+        get "/rescue", headers: { "Accept": "application/json" }
+      end
+
+      expect(response.status).to eq(401)
+      expect(response.content_type).to eq("application/json")
+      expect(response.body).to include("Unauthorized")
+    end
+
+    it "renders HTML for public exceptions for non-castable types" do
+      handle_request_exceptions do
+        get "/rescue", headers: { "Accept": "image/png" }
+      end
+
+      expect(response.status).to eq(401)
+      expect(response.content_type).to eq("text/html")
+      expect(response.body).to include("You have to log in")
+    end
+  end
 end

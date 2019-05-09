@@ -51,20 +51,8 @@ module RescueRegistry
 
   def self.response_for_debugging(content_type, wrapper)
     status, handler = handler_for_exception(wrapper.exception)
-    payload = handler.payload(show_details: true, traces: wrapper.traces)
-    format, formatted_body = format_body(content_type, payload)
-    [status, formatted_body, format]
-  end
+    body = handler.payload(show_details: true, traces: wrapper.traces)
 
-  def self.response_for_public(content_type, exception)
-    status, handler = handler_for_exception(wrapper.exception)
-    format, formatted_body = format_body(content_type, handler.payload)
-    [status, formatted_body, format]
-  end
-
-  private
-
-  def self.format_body(content_type, body)
     to_format = "to_#{content_type.to_sym}"
 
     if content_type && body.respond_to?(to_format)
@@ -75,7 +63,23 @@ module RescueRegistry
       format = Mime[:json]
     end
 
-    [format, formatted_body]
+    [status, formatted_body, format]
+  end
+
+  def self.response_for_public(content_type, exception)
+    status, handler = handler_for_exception(exception)
+    body = handler.payload
+
+    to_format = "to_#{content_type.to_sym}"
+
+    if content_type && body.respond_to?(to_format)
+      formatted_body = body.public_send(to_format)
+      format = content_type
+    else
+      format = Mime[:html]
+    end
+
+    [status, formatted_body, format]
   end
 end
 
