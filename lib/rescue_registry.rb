@@ -83,5 +83,9 @@ module RescueRegistry
   end
 end
 
+ActiveSupport.on_load(:action_controller) do
+  include RescueRegistry::Controller
+end
+
 require 'rescue_registry/action_dispatch'
 require 'rescue_registry/railtie'
