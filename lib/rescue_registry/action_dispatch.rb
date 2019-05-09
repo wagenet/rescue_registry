@@ -14,24 +14,6 @@ end
 ActionDispatch::DebugExceptions.class_eval do
   private
 
-  if private_method_defined?(:invoice_interceptors)
-    alias_method :invoke_interceptors_without_rescue_registry, :invoke_interceptors
-    def invoke_interceptors(request, exception)
-      # Since ExceptionWrapper is used here we need to wrap in the context
-      RescueRegistry.with_context(request.get_header("rescue_registry.context")) do
-        invoke_interceptors_without_rescue_registry(request, exception)
-      end
-    end
-  end
-
-  alias_method :render_exception_without_rescue_registry, :render_exception
-  def render_exception(request, exception)
-    # Since ExceptionWrapper is used here we need to wrap in the context
-    RescueRegistry.with_context(request.get_header("rescue_registry.context")) do
-      render_exception_without_rescue_registry(request, exception)
-    end
-  end
-
   # `#log_error`
   # TODO: We may be able to add more information, though the details remain to be determined
 
@@ -53,21 +35,19 @@ end
 
 ActionDispatch::ShowExceptions.class_eval do
   # @private
-  alias_method :initialize_without_graphiti, :initialize
+  alias_method :initialize_without_rescue_registry, :initialize
 
   # @private
   def initialize(*args)
-    initialize_without_graphiti(*args)
+    initialize_without_rescue_registry(*args)
     @exceptions_app = RescueRegistry::ExceptionsApp.new(@exceptions_app)
   end
 
-  private
-
-  alias_method :render_exception_without_rescue_registry, :render_exception
-  def render_exception(request, exception)
-    # Since ExceptionWrapper is used here we need to wrap in the context
-    RescueRegistry.with_context(request.get_header("rescue_registry.context")) do
-      render_exception_without_rescue_registry(request, exception)
-    end
+  alias_method :call_without_rescue_registry, :call
+  def call(*args)
+    warn "Didn't expect RescueRegistry context to be set in middleware" if RescueRegistry.context
+    call_without_rescue_registry(*args)
+  ensure
+    RescueRegistry.context = nil
   end
 end

@@ -1,33 +1,35 @@
 module RescueRegistry
   module Controller
-    def self.included(base)
-      base.cattr_accessor :rescue_registry, default: { }
-      base.around_action :set_rescue_registry_context
-      base.send(:extend, ClassMethods)
-    end
+    extend ActiveSupport::Concern
 
-    def self.inherited(subklass)
-      super
-      subklass.rescue_registry = rescue_registry.dup
+    included do
+      cattr_accessor :rescue_registry, default: { }
     end
 
     def rescue_registry
       self.class.rescue_registry
     end
 
-    private
-
-    def set_rescue_registry_context
-      # Set this here so we can still access after we leave the controller
-      request.set_header("rescue_registry.context", self)
+    def process_action(*args)
+      warn "Didn't expect RescueRegistry context to be set in controller" if RescueRegistry.context
 
       # Setting something globally is not very nice, but it allows us to access it without
       # having to change a whole lot of internal Rails APIs. This especially matters when
       # getting the status code via ExceptionWrapper.
-      RescueRegistry.with_context(self) { yield }
+      # We don't unset here so that it is available to middleware
+      # Unsetting happens in ActionDispatch::ShowExceptions. This _should_ be ok since we shouldn't
+      # be processing multiple requests in the same thread.
+      RescueRegistry.context = self
+
+      super
     end
 
-    module ClassMethods
+    class_methods do
+      def inherited(subklass)
+        super
+        subklass.rescue_registry = rescue_registry.dup
+      end
+
       def default_exception_handler
         ExceptionHandler
       end
