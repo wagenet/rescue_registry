@@ -18,10 +18,14 @@ module RescueRegistry
       handler ||= owner.try(:default_exception_handler)
       raise ArgumentError, "handler must be provided" unless handler
 
-      status = options[:status] || handler.try(:status)
-      raise ArgumentError, "need to provide a status or a handler that responds_to status" unless status
+      status = options[:status] ||= handler.default_status
+      raise ArgumentError, "status must be provided" unless status
+      raise ArgumentError, "invalid status: #{status}" unless status.is_a?(Integer) || status == :passthrough
 
-      @handlers[exception_class] = [status, handler, options]
+      # TODO: Validate options here
+
+      # We assign the status here as a default when looking up by class (and not instance)
+      @handlers[exception_class] = [handler, options]
     end
 
     def handler_info_for_exception(exception)
@@ -61,10 +65,8 @@ module RescueRegistry
       handler_info = handler_info_for_exception(exception)
       raise HandlerNotFound, "no handler found for #{exception.class}" unless handler_info
 
-      status, handler_class, handler_options = handler_info
-      handler = handler_class.new(exception, **handler_options)
-
-      [status, handler]
+      handler_class, handler_options = handler_info
+      handler_class.new(exception, **handler_options)
     end
 
     def handles_exception?(exception)
@@ -72,13 +74,17 @@ module RescueRegistry
     end
 
     def status_code_for_exception(exception)
-      handler_info_for_exception(exception)&.first
+      _, options = handler_info_for_exception(exception)
+      return unless options
+
+      # Return no code for passthrough.
+      # Alternatively we could handle this explicitly in the ExceptionWrapper monkeypatch.
+      options[:status] == :passthrough ? nil : options[:status]
     end
 
     def build_response(content_type, exception, **options)
-      status, handler = handler_for_exception(exception)
-      formatted_body, format = handler.formatted_payload(content_type, **options)
-      [status, formatted_body, format]
+      handler = handler_for_exception(exception)
+      handler.formatted_response(content_type, **options)
     end
 
     def response_for_debugging(content_type, exception, traces: nil)

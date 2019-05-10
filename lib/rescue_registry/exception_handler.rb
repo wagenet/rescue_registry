@@ -1,12 +1,17 @@
 module RescueRegistry
   class ExceptionHandler
-    def self.status
+    def self.default_status
       500
     end
 
     # TODO: Allow more customization
-    def initialize(exception, status: self.class.status)
+    def initialize(exception, status: nil)
       @exception = exception
+
+      if status == :passthrough
+        status = ActionDispatch::ExceptionWrapper.status_code_for_exception_without_rescue_registry(exception.class.name)
+      end
+
       @status = status
     end
 
@@ -55,7 +60,7 @@ module RescueRegistry
       }
     end
 
-    def formatted_payload(content_type, fallback: :json, **options)
+    def formatted_response(content_type, fallback: :json, **options)
       body = build_payload(**options)
 
       # TODO: Maybe make a helper to register these types?
@@ -64,7 +69,6 @@ module RescueRegistry
       if content_type && body.respond_to?(to_format)
         formatted_body = body.public_send(to_format)
         format = content_type
-        [formatted_body, format]
       else
         if fallback == :json
           formatted_body = body.to_json
@@ -75,6 +79,8 @@ module RescueRegistry
           raise ArgumentError, "unknown fallback=#{fallback}"
         end
       end
+
+      [status_code, formatted_body, format]
     end
   end
 

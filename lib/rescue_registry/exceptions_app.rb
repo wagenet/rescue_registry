@@ -15,17 +15,19 @@ module RescueRegistry
           content_type = Mime[:text]
         end
 
-        status, body, format = RescueRegistry.response_for_public(content_type, exception)
+        if (response = RescueRegistry.response_for_public(content_type, exception))
+          status, body, format = response
 
-        if request.path_info != "/#{status}"
-          warn "status mismatch; path_info=#{request.path_info}; status=#{status}"
+          if request.path_info != "/#{status}"
+            warn "status mismatch; path_info=#{request.path_info}; status=#{status}"
+          end
+
+          [status, { "Content-Type" => "#{format}; charset=#{ActionDispatch::Response.default_charset}",
+            "Content-Length" => body.bytesize.to_s }, [body]]
+        else
+          # If we have no response, it means we couldn't render for the content_type, use the default handler instead
+          @app.call(env)
         end
-
-        # If we have no format, it means we couldn't render for the content_type, use the default handler instead
-        return @app.call(env) unless format
-
-        [status, { "Content-Type" => "#{format}; charset=#{ActionDispatch::Response.default_charset}",
-          "Content-Length" => body.bytesize.to_s }, [body]]
       else
         @app.call(env)
       end
