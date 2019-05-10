@@ -13,10 +13,6 @@ module RescueRegistry
     attr_reader :exception, :status
     alias_method :status_code, :status
 
-    def show_details?
-      !!@show_details
-    end
-
     def error_code
       code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
       code_to_symbol.fetch(status_code, code_to_symbol[500])

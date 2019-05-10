@@ -26,7 +26,6 @@ module RescueRegistry
   end
 
   REGISTRY_METHODS = %i[
-    handler_info_for_exception
     handler_for_exception
     handles_exception?
     status_code_for_exception
