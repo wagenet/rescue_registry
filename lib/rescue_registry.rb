@@ -26,9 +26,37 @@ module RescueRegistry
 
   def self.handler_info_for_exception(exception)
     return unless context.respond_to?(:rescue_registry)
-    class_name = exception.is_a?(String) ? exception : exception.class.name
-    # TODO: Maybe look for super-classes too?
-    context.rescue_registry[class_name]
+
+    exception_class =
+      case exception
+      when String
+        exception.safe_constantize
+      when Class
+        exception
+      else
+        exception.class
+      end
+
+    return unless exception_class
+
+    raise ArgumentError, "#{exception_class} is not an Exception" unless exception_class <= Exception
+
+    # Reverse so most recently defined takes precedence
+    registry = context.rescue_registry.to_a.reverse
+
+    # Look for an exact class, then for the superclass and so on.
+    # There might be a more efficient way to do this, but this is pretty readable
+    match_class = exception_class
+    loop do
+      if (found = registry.find { |(klass, _)| klass == match_class })
+        return found.last
+      elsif match_class == Exception
+        # We've exhausted our options
+        return nil
+      end
+
+      match_class = match_class.superclass
+    end
   end
 
   def self.handler_for_exception(exception)
@@ -45,8 +73,8 @@ module RescueRegistry
     handler_info_for_exception(exception).present?
   end
 
-  def self.status_code_for_exception(class_name)
-    handler_info_for_exception(class_name)&.first
+  def self.status_code_for_exception(exception)
+    handler_info_for_exception(exception)&.first
   end
 
   def self.response_for_debugging(content_type, wrapper)

@@ -54,6 +54,14 @@ RSpec.describe "basic behavior", type: :request do
     )
   end
 
+  # TODO: Add more robust checks for this
+  it "handles subclasses" do
+    handle_request_exceptions do
+      get "/rescue/other"
+    end
+    expect(response.status).to eq(401)
+  end
+
   context "public exceptions" do
     around do |example|
       show_detailed_exceptions(false) { example.run }

@@ -36,10 +36,12 @@ module RescueRegistry
 
       # TODO: Support a shorthand for handler
       def register_exception(exception_class, handler: default_exception_handler, **options)
+        raise ArgumentError, "#{exception_class} is not an Exception" unless exception_class <= Exception
+
         status = options[:status] || handler.try(:status)
         raise ArgumentError, "need to provide a status or a handler that responds_to status" unless status
 
-        rescue_registry[exception_class.name] = [status, handler, options]
+        rescue_registry[exception_class] = [status, handler, options]
       end
     end
   end
