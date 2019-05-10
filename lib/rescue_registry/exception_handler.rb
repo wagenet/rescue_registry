@@ -39,14 +39,17 @@ module RescueRegistry
     end
 
     def detail
-      case @detail
-      when :exception
-        exception.message
-      when Proc
-        @detail.call(exception)
-      else
-        @detail.try(:to_s)
-      end
+      detail =
+        case @detail
+        when :exception
+          exception.message
+        when Proc
+          @detail.call(exception)
+        else
+          @detail.try(:to_s)
+        end
+
+      detail.presence || default_detail_for_status
     end
 
     def meta
@@ -105,6 +108,11 @@ module RescueRegistry
 
     private
 
+    def error_code_from_status
+      code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
+      code_to_symbol.fetch(status_code, code_to_symbol[500])
+    end
+
     def title_from_status
       Rack::Utils::HTTP_STATUS_CODES.fetch(
         status_code,
@@ -112,9 +120,10 @@ module RescueRegistry
       )
     end
 
-    def error_code_from_status
-      code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
-      code_to_symbol.fetch(status_code, code_to_symbol[500])
+    def default_detail_for_status
+      if status_code >= 500
+        "We've notified our engineers and hope to address this issue shortly."
+      end
     end
   end
 
