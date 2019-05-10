@@ -3,7 +3,12 @@ module RescueRegistry
     extend ActiveSupport::Concern
 
     included do
-      cattr_accessor :rescue_registry, default: { }
+      cattr_accessor :rescue_registry
+      self.rescue_registry = Registry.new(self)
+
+      class << self
+        delegate :register_exception, to: :rescue_registry
+      end
     end
 
     def rescue_registry
@@ -28,20 +33,11 @@ module RescueRegistry
       def inherited(subklass)
         super
         subklass.rescue_registry = rescue_registry.dup
+        subklass.rescue_registry.owner = subklass
       end
 
       def default_exception_handler
         ExceptionHandler
-      end
-
-      # TODO: Support a shorthand for handler
-      def register_exception(exception_class, handler: default_exception_handler, **options)
-        raise ArgumentError, "#{exception_class} is not an Exception" unless exception_class <= Exception
-
-        status = options[:status] || handler.try(:status)
-        raise ArgumentError, "need to provide a status or a handler that responds_to status" unless status
-
-        rescue_registry[exception_class] = [status, handler, options]
       end
     end
   end

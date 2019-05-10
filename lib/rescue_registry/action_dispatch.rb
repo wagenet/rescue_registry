@@ -26,7 +26,7 @@ ActionDispatch::DebugExceptions.class_eval do
   def render_for_api_request(content_type, wrapper)
     if RescueRegistry.handles_exception?(wrapper.exception)
       # Ideally `render_for_api_request` would be split up so we could avoid some duplication in `response_for_api_request`
-      render(*RescueRegistry.response_for_debugging(content_type, wrapper))
+      render(*RescueRegistry.response_for_debugging(content_type, wrapper.exception, traces: wrapper.traces))
     else
       render_for_api_request_without_rescue_registry(content_type, wrapper)
     end

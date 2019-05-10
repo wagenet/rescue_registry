@@ -21,8 +21,8 @@ module RescueRegistry
           warn "status mismatch; path_info=#{request.path_info}; status=#{status}"
         end
 
-        # For now if it is HTML then call the default exceptions app
-        return @app.call(env) if format == :html
+        # If we have no format, it means we couldn't render for the content_type, use the default handler instead
+        return @app.call(env) unless format
 
         [status, { "Content-Type" => "#{format}; charset=#{ActionDispatch::Response.default_charset}",
           "Content-Length" => body.bytesize.to_s }, [body]]

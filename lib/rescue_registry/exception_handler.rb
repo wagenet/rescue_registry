@@ -17,8 +17,26 @@ module RescueRegistry
       !!@show_details
     end
 
-    # TODO: This could use a better name
-    def payload(show_details: false, traces: nil)
+    def error_code
+      code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
+      code_to_symbol.fetch(status_code, code_to_symbol[500])
+    end
+
+    def title
+      Rack::Utils::HTTP_STATUS_CODES.fetch(
+        status_code,
+        Rack::Utils::HTTP_STATUS_CODES[500]
+      )
+    end
+
+    def detail
+    end
+
+    def meta
+      {}
+    end
+
+    def build_payload(show_details: false, traces: nil)
       payload_meta = meta
 
       if show_details
@@ -41,28 +59,32 @@ module RescueRegistry
       }
     end
 
-    def error_code
-      code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
-      code_to_symbol.fetch(status_code, code_to_symbol[500])
-    end
+    def formatted_payload(content_type, fallback: :json, **options)
+      body = build_payload(**options)
 
-    def title
-      Rack::Utils::HTTP_STATUS_CODES.fetch(
-        status_code,
-        Rack::Utils::HTTP_STATUS_CODES[500]
-      )
-    end
+      # TODO: Maybe make a helper to register these types?
+      to_format = content_type == :jsonapi ? "to_json" : "to_#{content_type.to_sym}"
 
-    def detail
-    end
-
-    def meta
-      {}
+      if content_type && body.respond_to?(to_format)
+        formatted_body = body.public_send(to_format)
+        format = content_type
+        [formatted_body, format]
+      else
+        if fallback == :json
+          formatted_body = body.to_json
+          format = Mime[:json]
+        elsif fallback == :none
+          return nil
+        else
+          raise ArgumentError, "unknown fallback=#{fallback}"
+        end
+      end
     end
   end
 
+  # Builds a payload in the style of the Rails default handling for compatibility
   class RailsExceptionHandler < ExceptionHandler
-    def payload(show_details: false, traces: nil)
+    def build_payload(show_details: false, traces: nil)
       body = {
         status: status_code,
         error:  title
