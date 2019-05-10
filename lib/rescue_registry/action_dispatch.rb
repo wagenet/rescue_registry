@@ -31,17 +31,19 @@ ActionDispatch::DebugExceptions.class_eval do
       begin
         response = RescueRegistry.response_for_debugging(content_type, wrapper.exception, traces: wrapper.traces)
       rescue Exception => e
-        if (logger = ActionView::Base.logger || stderr_logger)
-          Rails.logger.error "Encountered an exception while trying to handle with RescueRegistry. Ironic..."
-          Rails.logger.error e.inspect
-          Rails.logger.error e.backtrace.join("\n")
-        end
+        # Replace the original exception (still available via `cause`) and let it get handled with default handlers
+        wrapper = ActionDispatch::ExceptionWrapper.new(wrapper.backtrace_cleaner, e)
       end
     end
 
     if response
       render(*response)
     else
+      # One of the following is true:
+      # - No handler for the exception
+      # - No response for content_type
+      # - An exception while generating the response
+      # In any case, we go with the default here.
       render_for_api_request_without_rescue_registry(content_type, wrapper)
     end
   end
