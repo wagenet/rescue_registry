@@ -24,9 +24,23 @@ ActionDispatch::DebugExceptions.class_eval do
   # we could choose to ignore it, but the detailed information would definitely be useful.
   alias_method :render_for_api_request_without_rescue_registry, :render_for_api_request
   def render_for_api_request(content_type, wrapper)
+    response = nil
+
     if RescueRegistry.handles_exception?(wrapper.exception)
-      # Ideally `render_for_api_request` would be split up so we could avoid some duplication in `response_for_api_request`
-      render(*RescueRegistry.response_for_debugging(content_type, wrapper.exception, traces: wrapper.traces))
+      # Ideally `render_for_api_request` would be split up so we could avoid some duplication in RescueRegistry
+      begin
+        response = RescueRegistry.response_for_debugging(content_type, wrapper.exception, traces: wrapper.traces)
+      rescue Exception => e
+        if (logger = ActionView::Base.logger || stderr_logger)
+          Rails.logger.error "Encountered an exception while trying to handle with RescueRegistry. Ironic..."
+          Rails.logger.error e.inspect
+          Rails.logger.error e.backtrace.join("\n")
+        end
+      end
+    end
+
+    if response
+      render(*response)
     else
       render_for_api_request_without_rescue_registry(content_type, wrapper)
     end
