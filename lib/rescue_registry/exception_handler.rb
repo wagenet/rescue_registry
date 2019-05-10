@@ -5,29 +5,29 @@ module RescueRegistry
     end
 
     # TODO: Allow more customization
-    def initialize(exception, status: nil)
+    def initialize(exception, options = { })
       @exception = exception
 
+      status = options[:status]
       if status == :passthrough
         status = ActionDispatch::ExceptionWrapper.status_code_for_exception_without_rescue_registry(exception.class.name)
       end
-
       @status = status
+
+      @title = options[:title]
+
+      # TODO: Warn about unrecognized options
     end
 
     attr_reader :exception, :status
     alias_method :status_code, :status
 
     def error_code
-      code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
-      code_to_symbol.fetch(status_code, code_to_symbol[500])
+      error_code_from_status
     end
 
     def title
-      Rack::Utils::HTTP_STATUS_CODES.fetch(
-        status_code,
-        Rack::Utils::HTTP_STATUS_CODES[500]
-      )
+      @title || title_from_status
     end
 
     def detail
@@ -81,6 +81,20 @@ module RescueRegistry
       end
 
       [status_code, formatted_body, format]
+    end
+
+    private
+
+    def title_from_status
+      Rack::Utils::HTTP_STATUS_CODES.fetch(
+        status_code,
+        Rack::Utils::HTTP_STATUS_CODES[500]
+      )
+    end
+
+    def error_code_from_status
+      code_to_symbol = Rack::Utils::SYMBOL_TO_STATUS_CODE.invert
+      code_to_symbol.fetch(status_code, code_to_symbol[500])
     end
   end
 

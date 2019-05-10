@@ -1,17 +1,17 @@
 require_relative "rails_helper"
 
 RSpec.describe "basic behavior", type: :request do
+  around do |example|
+    handle_request_exceptions { example.run }
+  end
+
   it "set status code" do
-    handle_request_exceptions do
-      get "/rescue"
-    end
+    get "/rescue", params: { exception: "CustomStatusError" }
     expect(response.status).to eq(401)
   end
 
   it "uses custom renderer" do
-    handle_request_exceptions do
-      get "/rescue", headers: { "Accept" => "application/json" }
-    end
+    get "/rescue", params: { exception: "CustomStatusError" }, headers: { "Accept" => "application/json" }
     expect(response.status).to eq(401)
     expect(response.content_type).to eq("application/json")
     expect(JSON.parse(response.body)).to match(
@@ -23,7 +23,7 @@ RSpec.describe "basic behavior", type: :request do
           "detail" => nil,
           "meta" => {
             "__details__" => a_hash_including(
-              "exception" => a_string_including("StandardError"),
+              "exception" => a_string_including("CustomStatusError"),
               "traces" => a_hash_including(
                 "Application Trace" => an_instance_of(Array),
                 "Framework Trace" => an_instance_of(Array)
@@ -35,10 +35,14 @@ RSpec.describe "basic behavior", type: :request do
     )
   end
 
+  it "can change the title" do
+    get "/rescue", params: { exception: "CustomTitleError" }, headers: { "Accept" => "application/json" }
+    expect(response.status).to eq(500)
+    expect(JSON.parse(response.body)["errors"][0]["title"]).to eq("My Title")
+  end
+
   it "can render in Rails style" do
-    handle_request_exceptions do
-      get "/rescue/rails", headers: { "Accept" => "application/json" }
-    end
+    get "/rescue", params: { exception: "RailsError" }, headers: { "Accept" => "application/json" }
     expect(response.status).to eq(403)
     expect(response.content_type).to eq("application/json")
     expect(JSON.parse(response.body)).to match(
@@ -56,9 +60,7 @@ RSpec.describe "basic behavior", type: :request do
 
   # TODO: Add more robust checks for this
   it "handles subclasses" do
-    handle_request_exceptions do
-      get "/rescue/other"
-    end
+    get "/rescue", params: { exception: "SubclassedError" }
     expect(response.status).to eq(401)
   end
 
@@ -68,9 +70,7 @@ RSpec.describe "basic behavior", type: :request do
     end
 
     it "handles public exceptions for HTML requests" do
-      handle_request_exceptions do
-        get "/rescue"
-      end
+      get "/rescue", params: { exception: "CustomStatusError" }
 
       expect(response.status).to eq(401)
       expect(response.content_type).to eq("text/html")
@@ -78,9 +78,7 @@ RSpec.describe "basic behavior", type: :request do
     end
 
     it "handles public exceptions for JSON requests" do
-      handle_request_exceptions do
-        get "/rescue", headers: { "Accept": "application/json" }
-      end
+      get "/rescue", params: { exception: "CustomStatusError" }, headers: { "Accept": "application/json" }
 
       expect(response.status).to eq(401)
       expect(response.content_type).to eq("application/json")
@@ -88,9 +86,7 @@ RSpec.describe "basic behavior", type: :request do
     end
 
     it "renders HTML for public exceptions for non-castable types" do
-      handle_request_exceptions do
-        get "/rescue", headers: { "Accept": "image/png" }
-      end
+      get "/rescue", params: { exception: "CustomStatusError" }, headers: { "Accept": "image/png" }
 
       expect(response.status).to eq(401)
       expect(response.content_type).to eq("text/html")
