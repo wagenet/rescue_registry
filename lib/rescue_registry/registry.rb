@@ -28,39 +28,6 @@ module RescueRegistry
       @handlers[exception_class] = [handler, options]
     end
 
-    def handler_info_for_exception(exception)
-      exception_class =
-        case exception
-        when String
-          exception.safe_constantize
-        when Class
-          exception
-        else
-          exception.class
-        end
-
-      return unless exception_class
-
-      raise ArgumentError, "#{exception_class} is not an Exception" unless exception_class <= Exception
-
-      # Reverse so most recently defined takes precedence
-      registry = @handlers.to_a.reverse
-
-      # Look for an exact class, then for the superclass and so on.
-      # There might be a more efficient way to do this, but this is pretty readable
-      match_class = exception_class
-      loop do
-        if (found = registry.find { |(klass, _)| klass == match_class })
-          return found.last
-        elsif match_class == Exception
-          # We've exhausted our options
-          return nil
-        end
-
-        match_class = match_class.superclass
-      end
-    end
-
     def handler_for_exception(exception)
       handler_info = handler_info_for_exception(exception)
       raise HandlerNotFound, "no handler found for #{exception.class}" unless handler_info
@@ -93,6 +60,41 @@ module RescueRegistry
 
     def response_for_public(content_type, exception)
       build_response(content_type, exception, fallback: :none)
+    end
+
+    private
+
+    def handler_info_for_exception(exception)
+      exception_class =
+        case exception
+        when String
+          exception.safe_constantize
+        when Class
+          exception
+        else
+          exception.class
+        end
+
+      return unless exception_class
+
+      raise ArgumentError, "#{exception_class} is not an Exception" unless exception_class <= Exception
+
+      # Reverse so most recently defined takes precedence
+      registry = @handlers.to_a.reverse
+
+      # Look for an exact class, then for the superclass and so on.
+      # There might be a more efficient way to do this, but this is pretty readable
+      match_class = exception_class
+      loop do
+        if (found = registry.find { |(klass, _)| klass == match_class })
+          return found.last
+        elsif match_class == Exception
+          # We've exhausted our options
+          return nil
+        end
+
+        match_class = match_class.superclass
+      end
     end
   end
 end
