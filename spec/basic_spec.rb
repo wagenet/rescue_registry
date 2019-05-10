@@ -5,13 +5,17 @@ RSpec.describe "basic behavior", type: :request do
     handle_request_exceptions { example.run }
   end
 
+  def make_request(exception, accept = nil)
+    get "/rescue", params: { exception: exception }, headers: { "Accept" => accept && Mime[accept] }
+  end
+
   it "set status code" do
-    get "/rescue", params: { exception: "CustomStatusError" }
+    make_request("CustomStatusError")
     expect(response.status).to eq(401)
   end
 
   it "uses custom renderer" do
-    get "/rescue", params: { exception: "CustomStatusError" }, headers: { "Accept" => "application/json" }
+    make_request("CustomStatusError", :json)
     expect(response.status).to eq(401)
     expect(response.content_type).to eq("application/json")
     expect(JSON.parse(response.body)).to match(
@@ -36,13 +40,45 @@ RSpec.describe "basic behavior", type: :request do
   end
 
   it "can change the title" do
-    get "/rescue", params: { exception: "CustomTitleError" }, headers: { "Accept" => "application/json" }
+    make_request("CustomTitleError", :json)
     expect(response.status).to eq(500)
     expect(JSON.parse(response.body)["errors"][0]["title"]).to eq("My Title")
   end
 
+  context "changing the detail" do
+    it "can change to the exception message" do
+      make_request("DetailExceptionError", :json)
+      expect(response.status).to eq(500)
+      expect(JSON.parse(response.body)["errors"][0]["detail"]).to eq("Exception in #index")
+    end
+
+    it "can change to a proc" do
+      make_request("DetailProcError", :json)
+      expect(response.status).to eq(500)
+      expect(JSON.parse(response.body)["errors"][0]["detail"]).to eq("RESCUECONTROLLER::DETAILPROCERROR")
+    end
+
+    it "can change to a string" do
+      make_request("DetailStringError", :json)
+      expect(response.status).to eq(500)
+      expect(JSON.parse(response.body)["errors"][0]["detail"]).to eq("Custom Detail")
+    end
+  end
+
+  it "changing the meta" do
+    make_request("MetaProcError", :json)
+    expect(response.status).to eq(500)
+    expect(JSON.parse(response.body)["errors"][0]["meta"]).to match(a_hash_including("class_name" => "RESCUECONTROLLER::METAPROCERROR"))
+  end
+
+  it "can use custom handlers" do
+    make_request("CustomHandlerError", :json)
+    expect(response.status).to eq(302)
+    expect(JSON.parse(response.body)["errors"][0]["title"]).to eq("Custom Title")
+  end
+
   it "can render in Rails style" do
-    get "/rescue", params: { exception: "RailsError" }, headers: { "Accept" => "application/json" }
+    make_request("RailsError", :json)
     expect(response.status).to eq(403)
     expect(response.content_type).to eq("application/json")
     expect(JSON.parse(response.body)).to match(
@@ -60,7 +96,7 @@ RSpec.describe "basic behavior", type: :request do
 
   # TODO: Add more robust checks for this
   it "handles subclasses" do
-    get "/rescue", params: { exception: "SubclassedError" }
+    make_request("SubclassedError")
     expect(response.status).to eq(401)
   end
 
@@ -70,7 +106,7 @@ RSpec.describe "basic behavior", type: :request do
     end
 
     it "handles public exceptions for HTML requests" do
-      get "/rescue", params: { exception: "CustomStatusError" }
+      make_request("CustomStatusError")
 
       expect(response.status).to eq(401)
       expect(response.content_type).to eq("text/html")
@@ -78,7 +114,7 @@ RSpec.describe "basic behavior", type: :request do
     end
 
     it "handles public exceptions for JSON requests" do
-      get "/rescue", params: { exception: "CustomStatusError" }, headers: { "Accept": "application/json" }
+      make_request("CustomStatusError", :json)
 
       expect(response.status).to eq(401)
       expect(response.content_type).to eq("application/json")
@@ -86,7 +122,7 @@ RSpec.describe "basic behavior", type: :request do
     end
 
     it "renders HTML for public exceptions for non-castable types" do
-      get "/rescue", params: { exception: "CustomStatusError" }, headers: { "Accept": "image/png" }
+      make_request("CustomStatusError", :png)
 
       expect(response.status).to eq(401)
       expect(response.content_type).to eq("text/html")

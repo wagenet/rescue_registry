@@ -4,8 +4,8 @@ module RescueRegistry
       500
     end
 
-    # TODO: Allow more customization
-    def initialize(exception, options = { })
+    # Use a glob for options so that unknown values won't throw errors. Also, this list could get long...
+    def initialize(exception, **options)
       @exception = exception
 
       status = options[:status]
@@ -15,6 +15,14 @@ module RescueRegistry
       @status = status
 
       @title = options[:title]
+
+      @detail = options[:detail]
+      if options[:message] && @detail.nil?
+        # Deprecated, from GraphitiErrors
+        @detail = (options[:message] == true) ? :exception : options[:message]
+      end
+
+      @meta = options[:meta]
 
       # TODO: Warn about unrecognized options
     end
@@ -31,10 +39,22 @@ module RescueRegistry
     end
 
     def detail
+      case @detail
+      when :exception
+        exception.message
+      when Proc
+        @detail.call(exception)
+      else
+        @detail.try(:to_s)
+      end
     end
 
     def meta
-      {}
+      if @meta.is_a?(Proc)
+        @meta.call(exception)
+      else
+        { }
+      end
     end
 
     def build_payload(show_details: false, traces: nil)
