@@ -16,7 +16,11 @@ module RescueRegistry
     end
 
     def process_action(*args)
-      warn "Didn't expect RescueRegistry context to be set in controller" if RescueRegistry.context
+      if RescueRegistry.context
+        # Controller logger isn't yet available
+        Rails.logger.warn "Didn't expect RescueRegistry context to be set in controller"
+        Rails.logger.debug caller.join("\n")
+      end
 
       # Setting something globally is not very nice, but it allows us to access it without
       # having to change a whole lot of internal Rails APIs. This especially matters when
