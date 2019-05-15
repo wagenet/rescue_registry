@@ -1,6 +1,6 @@
 # RescueRegistry
 
-RescueRegistry improve error handling with Rails while still hewing as close to the defaults as possible.
+RescueRegistry improves error handling with Rails while still hewing as close to the defaults as possible.
 
 ## Usage
 
