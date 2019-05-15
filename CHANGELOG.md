@@ -7,4 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-No releases means no changes...
+## [0.1.0] - 2019-05-15
+### Added
+- Everything, it's the first release!
