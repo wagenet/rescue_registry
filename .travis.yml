@@ -1,4 +1,23 @@
 language: ruby
 rvm: 2.6
+
+gemfile:
+  - gemfiles/rails_5.gemfile
+  - gemfiles/rails_6.gemfile
+
+matrix:
+  include:
+    # Oldest supported Rubies
+    - rvm: 2.4
+      gemfile: gemfiles/rails_5.gemfile
+    - rvm: 2.5
+      gemfile: gemfiles/rails_6.gemfile
+    # Bleeding edge, unlocked
+    - gemfile: gemfiles/rails_edge.gemfile
+      install: bundle update
+  allow_failures:
+    - gemfile: gemfiles/rails_edge.gemfile
+  fast_finish: true
+
 before_install: gem install bundler
-before_script: rake db:setup
+before_script: bundle exec rake db:setup
