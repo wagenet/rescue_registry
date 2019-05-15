@@ -2,6 +2,27 @@
 
 RescueRegistry improves error handling with Rails while still hewing as close to the defaults as possible.
 
+
+
+## Features
+
+### Better than `rescue_from`
+`rescue_from` works fine, but it it's a big hammer. Using it completely bypasses Rail's built-in exception handling middlewares,
+which actually do some nice things for us (e.g. automatically handling different data formats). RescueRegistry allows the built-in
+middleware to handle the exceptions but with our custom handlers.
+
+### Better default exception handling
+Rails also has some built-in support for assigning different exception classes to status types (See `config.action_dispatch.rescue_responses`).
+Unfortunately, all this allows you to do is assign a status code. If you want more complex error handling, or to use different codes in
+different controllers, you're out of luck. With RescueRegistry you can register and exception with a custom handler or with different status
+codes in different controllers.
+
+## In Action
+
+### graphiti-rails
+The [graphiti-rails gem](https://github.com/wagenet/graphiti-rails) uses RescueRegistry to facilitate better JSON:API error handling, since
+Rails' out-of-the-box behavior doesn't adhere to the JSON:API spec.
+
 ## Usage
 
 Example usages:
@@ -40,29 +61,12 @@ class MyController < ActionController::Base
 end
 ```
 
-### In Action
-
-Take a look at the [graphiti-rails gem](https://github.com/wagenet/graphiti-rails) to see RescueRegistry in action.
-
 ## Installation
 Add this line to your application's Gemfile:
 
 ```ruby
 gem 'rescue_registry'
 ```
-
-## Features
-
-### Better than `rescue_from`
-`rescue_from` works fine, but it it's a big hammer. Using it completely bypasses Rail's built-in exception handling middlewares,
-which actually do some nice things for us (e.g. automatically handling different data formats). RescueRegistry allows the built-in
-middleware to handle the exceptions but with our custom handlers.
-
-### Better default exception handling
-Rails also has some built-in support for assigning different exception classes to status types (See `config.action_dispatch.rescue_responses`).
-Unfortunately, all this allows you to do is assign a status code. If you want more complex error handling, or to use different codes in
-different controllers, you're out of luck. With RescueRegistry you can register and exception with a custom handler or with different status
-codes in different controllers.
 
 ## Contributing
 We'd love to have your help improving rescue_registry, send a PR!
