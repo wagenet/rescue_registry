@@ -1,3 +1,5 @@
+require 'action_dispatch'
+
 ActionDispatch::ExceptionWrapper.class_eval do
   class << self
     alias_method :status_code_for_exception_without_rescue_registry, :status_code_for_exception

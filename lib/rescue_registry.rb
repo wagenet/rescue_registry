@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support'
+
 module RescueRegistry
   autoload :Controller,            "rescue_registry/controller"
   autoload :ExceptionsApp,         "rescue_registry/exceptions_app"
