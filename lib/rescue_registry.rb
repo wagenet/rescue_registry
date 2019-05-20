@@ -3,6 +3,7 @@
 require 'active_support'
 
 module RescueRegistry
+  autoload :ActionDispatch,       "rescue_registry/action_dispatch"
   autoload :Controller,            "rescue_registry/controller"
   autoload :ExceptionsApp,         "rescue_registry/exceptions_app"
   autoload :ExceptionHandler,      "rescue_registry/exception_handler"
@@ -43,9 +44,14 @@ module RescueRegistry
   end
 end
 
+ActiveSupport.on_load(:before_initialize) do
+  ActionDispatch::ExceptionWrapper.singleton_class.prepend RescueRegistry::ActionDispatch::ExceptionWrapper
+  ActionDispatch::DebugExceptions.prepend RescueRegistry::ActionDispatch::DebugExceptions
+  ActionDispatch::ShowExceptions.prepend RescueRegistry::ActionDispatch::ShowExceptions
+end
+
 ActiveSupport.on_load(:action_controller) do
   include RescueRegistry::Controller
 end
 
-require 'rescue_registry/action_dispatch'
 require 'rescue_registry/railtie'
