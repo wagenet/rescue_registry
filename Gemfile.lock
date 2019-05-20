@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     rescue_registry (0.1.0)
-      rails (>= 5.0, < 7.0)
+      activesupport (>= 5.0)
 
 GEM
   remote: https://rubygems.org/

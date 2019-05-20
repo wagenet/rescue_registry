@@ -3,12 +3,15 @@
 require 'active_support'
 
 module RescueRegistry
-  autoload :ActionDispatch,       "rescue_registry/action_dispatch"
+  autoload :ActionDispatch,        "rescue_registry/action_dispatch"
+  autoload :Context,               "rescue_registry/context"
   autoload :Controller,            "rescue_registry/controller"
   autoload :ExceptionsApp,         "rescue_registry/exceptions_app"
   autoload :ExceptionHandler,      "rescue_registry/exception_handler"
   autoload :RailsExceptionHandler, "rescue_registry/exception_handler"
   autoload :Registry,              "rescue_registry/registry"
+  autoload :ResetContext,          "rescue_registry/reset_context"
+  autoload :ShowExceptions,        "rescue_registry/show_exceptions"
 
   class HandlerNotFound < StandardError; end
 
@@ -54,4 +57,6 @@ ActiveSupport.on_load(:action_controller) do
   include RescueRegistry::Controller
 end
 
-require 'rescue_registry/railtie'
+if defined?(Rails)
+  require 'rescue_registry/railtie'
+end

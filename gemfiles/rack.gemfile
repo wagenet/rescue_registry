@@ -2,10 +2,13 @@
 
 source "https://rubygems.org"
 
-gem "rails", "~> 6.0.0.rc1"
-gem "rspec-rails", "~> 3.8"
-gem "sqlite3", "~> 1.4.0"
+gem "rails"
+gem "rspec-rails"
+gem "sqlite3"
 gem "pry"
 gem "pry-byebug"
+gem "rack"
+gem "rack-test"
+gem "rspec", "~> 3.8"
 
 gemspec path: "../"

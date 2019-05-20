@@ -1,10 +1,14 @@
 ENV["RAILS_ENV"] ||= "test"
 
 require_relative "dummy/config/environment"
+require_relative "spec_helper"
 require "rspec/rails"
-require "rspec/mocks"
 
-module SpecHelpers
+# If we ran the Rack specs first, these won't have been required
+require 'rescue_registry/action_dispatch'
+require 'rescue_registry/railtie'
+
+module RailsSpecHelpers
   def handle_request_exceptions(handle = true)
     original_value = Rails.application.config.action_dispatch.handle_exceptions
 
@@ -33,11 +37,7 @@ module SpecHelpers
 end
 
 RSpec.configure do |config|
-  config.include SpecHelpers
-
-  config.example_status_persistence_file_path = File.expand_path(".rspec-examples.txt", __dir__)
-
-  config.mock_with :rspec
+  config.include RailsSpecHelpers
 
   config.use_transactional_fixtures = true
 end
