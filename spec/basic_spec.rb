@@ -106,6 +106,11 @@ RSpec.describe "basic behavior", type: :request do
     expect(JSON.parse(response.body)["errors"][0]["code"]).to eq("not_found")
   end
 
+  it "falls back to global handler" do
+    make_request("::GlobalError", :json)
+    expect(response.status).to eq(400)
+  end
+
   context "public exceptions" do
     around do |example|
       show_detailed_exceptions(false) { example.run }

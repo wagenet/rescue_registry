@@ -20,6 +20,8 @@ if Mime[:jsonapi].nil?
   Mime::Type.register("application/vnd.api+json", :jsonapi)
 end
 
+class GlobalError < StandardError; end
+
 module RescueRegistryTest
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -31,6 +33,12 @@ module RescueRegistryTest
     # the framework and any gems in your application.
 
     config.debug_exception_response_format = :api
+
+    initializer "register_global_exception" do
+      ActiveSupport.on_load(:action_controller) do
+        register_exception GlobalError, status: 400
+      end
+    end
   end
 end
 
