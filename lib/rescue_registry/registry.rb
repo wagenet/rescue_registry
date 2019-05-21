@@ -11,16 +11,28 @@ module RescueRegistry
       @handlers = @handlers.dup
     end
 
+    def passthrough_allowed?
+      defined?(ActionDispatch::ExceptionWrapper)
+    end
+
+    def passthrough_status(exception)
+      ::ActionDispatch::ExceptionWrapper.status_code_for_exception(exception.class.name)
+    end
+
     # TODO: Support a shorthand for handler
     def register_exception(exception_class, handler: nil, **options)
       raise ArgumentError, "#{exception_class} is not an Exception" unless exception_class <= Exception
 
-      handler ||= owner.try(:default_exception_handler)
+      if owner.respond_to?(:default_exception_handler)
+        handler ||= owner.default_exception_handler
+      end
       raise ArgumentError, "handler must be provided" unless handler
 
       status = options[:status] ||= handler.default_status
       raise ArgumentError, "status must be provided" unless status
-      raise ArgumentError, "invalid status: #{status}" unless status.is_a?(Integer) || status == :passthrough
+      unless status.is_a?(Integer) || (passthrough_allowed? && status == :passthrough)
+        raise ArgumentError, "invalid status: #{status}"
+      end
 
       # TODO: Validate options here
 
@@ -33,20 +45,27 @@ module RescueRegistry
       raise HandlerNotFound, "no handler found for #{exception.class}" unless handler_info
 
       handler_class, handler_options = handler_info
+
+      if handler_options[:status] == :passthrough
+        handler_options[:status] = passthrough_status(exception)
+      end
+
       handler_class.new(exception, **handler_options)
     end
 
     def handles_exception?(exception)
-      handler_info_for_exception(exception).present?
+      !handler_info_for_exception(exception).nil?
     end
 
-    def status_code_for_exception(exception)
+    def status_code_for_exception(exception, passthrough: true)
       _, options = handler_info_for_exception(exception)
       return unless options
 
-      # Return no code for passthrough.
-      # Alternatively we could handle this explicitly in the ExceptionWrapper monkeypatch.
-      options[:status] == :passthrough ? nil : options[:status]
+      if options[:status] == :passthrough
+        passthrough ? passthrough_status(exception) : nil
+      else
+        options[:status]
+      end
     end
 
     def build_response(content_type, exception, **options)
@@ -54,12 +73,12 @@ module RescueRegistry
       handler.formatted_response(content_type, **options)
     end
 
-    def response_for_debugging(content_type, exception, traces: nil)
-      build_response(content_type, exception, show_details: true, traces: traces)
+    def response_for_debugging(content_type, exception, traces: nil, fallback: :none)
+      build_response(content_type, exception, show_details: true, traces: traces, fallback: fallback)
     end
 
-    def response_for_public(content_type, exception)
-      build_response(content_type, exception, fallback: :none)
+    def response_for_public(content_type, exception, fallback: :none)
+      build_response(content_type, exception, fallback: fallback)
     end
 
     private

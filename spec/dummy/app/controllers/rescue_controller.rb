@@ -28,8 +28,11 @@ class RescueController < ApplicationController
   register_exception MetaProcError, meta: -> (e) { { class_name: e.class.name.upcase } }
   register_exception CustomHandlerError, handler: CustomErrorHandler
   register_exception RailsError, status: 403, handler: RescueRegistry::RailsExceptionHandler
+  register_exception ActiveRecord::RecordNotFound, status: :passthrough
 
   def index
-    raise "RescueController::#{params[:exception]}".constantize, "Exception in #index"
+    exception_name = params[:exception]
+    exception_name = "RescueController::#{exception_name}" unless exception_name.starts_with?("::")
+    raise exception_name.constantize, "Exception in #index"
   end
 end

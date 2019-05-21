@@ -100,6 +100,12 @@ RSpec.describe "basic behavior", type: :request do
     expect(response.status).to eq(401)
   end
 
+  it "can do a status passthrough" do
+    make_request("::ActiveRecord::RecordNotFound", :jsonapi)
+    expect(response.status).to eq(404)
+    expect(JSON.parse(response.body)["errors"][0]["code"]).to eq("not_found")
+  end
+
   context "public exceptions" do
     around do |example|
       show_detailed_exceptions(false) { example.run }
