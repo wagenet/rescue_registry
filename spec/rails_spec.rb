@@ -110,6 +110,10 @@ if defined?(Rails)
       make_request("::ActiveRecord::RecordNotFound", :jsonapi)
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"][0]["code"]).to eq("not_found")
+
+      make_request("::ActiveRecord::StaleObjectError", :jsonapi)
+      expect(response.status).to eq(409), "has correct status for multiple errors"
+      expect(JSON.parse(response.body)["errors"][0]["code"]).to eq("conflict")
     end
 
     it "falls back to global handler" do

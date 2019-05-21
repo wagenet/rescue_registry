@@ -47,7 +47,7 @@ module RescueRegistry
       handler_class, handler_options = handler_info
 
       if handler_options[:status] == :passthrough
-        handler_options[:status] = passthrough_status(exception)
+        handler_options = handler_options.merge(status: passthrough_status(exception))
       end
 
       handler_class.new(exception, **handler_options)

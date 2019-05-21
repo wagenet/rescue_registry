@@ -28,7 +28,7 @@ class RescueController < ApplicationController
   register_exception MetaProcError, meta: -> (e) { { class_name: e.class.name.upcase } }
   register_exception CustomHandlerError, handler: CustomErrorHandler
   register_exception RailsError, status: 403, handler: RescueRegistry::RailsExceptionHandler
-  register_exception ActiveRecord::RecordNotFound, status: :passthrough
+  register_exception ActiveRecord::ActiveRecordError, status: :passthrough
   register_exception OtherGlobalError, status: 401
 
   def index
