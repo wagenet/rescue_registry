@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 973096b6ae1f34310316a74e282501357739ac87
+  revision: 3453c5d4c0b54fc2a117a09ff4d5964110f5fbe8
   specs:
     actioncable (6.1.0.alpha)
       actionpack (= 6.1.0.alpha)
@@ -82,7 +82,7 @@ GIT
 PATH
   remote: ..
   specs:
-    rescue_registry (0.1.0)
+    rescue_registry (0.2.0)
       activesupport (>= 5.0)
 
 GEM
