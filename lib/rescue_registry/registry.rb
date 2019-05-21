@@ -3,7 +3,7 @@ module RescueRegistry
     attr_accessor :owner
 
     def initialize(owner)
-      @owner = self
+      @owner = owner
       @handlers = { }
     end
 
