@@ -16,6 +16,10 @@ require "sprockets/railtie"
 Bundler.require(*Rails.groups)
 require "rescue_registry"
 
+if Mime[:jsonapi].nil?
+  Mime::Type.register("application/vnd.api+json", :jsonapi)
+end
+
 module RescueRegistryTest
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

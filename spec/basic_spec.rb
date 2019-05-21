@@ -121,6 +121,14 @@ RSpec.describe "basic behavior", type: :request do
       expect(response.body).to include("Unauthorized")
     end
 
+    it "handles public exceptions for JSON:API requests" do
+      make_request("CustomStatusError", :jsonapi)
+
+      expect(response.status).to eq(401)
+      expect(response.content_type).to eq("application/vnd.api+json")
+      expect(JSON.parse(response.body)["errors"][0]["code"]).to eq("unauthorized")
+    end
+
     it "renders HTML for public exceptions for non-castable types" do
       make_request("CustomStatusError", :png)
 
