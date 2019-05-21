@@ -8,11 +8,7 @@ module RescueRegistry
     def initialize(exception, **options)
       @exception = exception
 
-      status = options[:status]
-      if status == :passthrough
-        status = ActionDispatch::ExceptionWrapper.status_code_for_exception_without_rescue_registry(exception.class.name)
-      end
-      @status = status
+      @status = options[:status]
 
       @title = options[:title]
 
