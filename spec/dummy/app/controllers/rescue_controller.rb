@@ -29,6 +29,7 @@ class RescueController < ApplicationController
   register_exception CustomHandlerError, handler: CustomErrorHandler
   register_exception RailsError, status: 403, handler: RescueRegistry::RailsExceptionHandler
   register_exception ActiveRecord::RecordNotFound, status: :passthrough
+  register_exception OtherGlobalError, status: 401
 
   def index
     exception_name = params[:exception]

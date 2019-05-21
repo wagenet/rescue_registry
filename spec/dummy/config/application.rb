@@ -21,6 +21,7 @@ if Mime[:jsonapi].nil?
 end
 
 class GlobalError < StandardError; end
+class OtherGlobalError < StandardError; end
 
 module RescueRegistryTest
   class Application < Rails::Application

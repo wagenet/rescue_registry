@@ -111,6 +111,14 @@ RSpec.describe "basic behavior", type: :request do
     expect(response.status).to eq(400)
   end
 
+  it "doesn't pollute parent contexts" do
+    make_request("::OtherGlobalError")
+    expect(response.status).to eq(401), "affects registered context"
+
+    get "/other"
+    expect(response.status).to eq(500), "does not affect parent context"
+  end
+
   context "public exceptions" do
     around do |example|
       show_detailed_exceptions(false) { example.run }
