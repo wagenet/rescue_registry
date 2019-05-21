@@ -3,16 +3,7 @@ module RescueRegistry
     extend ActiveSupport::Concern
 
     included do
-      class_attribute :rescue_registry
-      self.rescue_registry = Registry.new(self)
-
-      class << self
-        delegate :register_exception, to: :rescue_registry
-      end
-    end
-
-    def rescue_registry
-      self.class.rescue_registry
+      include Context
     end
 
     def process_action(*args)
@@ -31,18 +22,6 @@ module RescueRegistry
       RescueRegistry.context = self
 
       super
-    end
-
-    class_methods do
-      def inherited(subklass)
-        super
-        subklass.rescue_registry = rescue_registry.dup
-        subklass.rescue_registry.owner = subklass
-      end
-
-      def default_exception_handler
-        ExceptionHandler
-      end
     end
   end
 end

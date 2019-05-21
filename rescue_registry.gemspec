@@ -26,12 +26,10 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md", "CHANGELOG.md"]
 
-  spec.add_dependency "rails", ">= 5.0", "< 7.0"
+  spec.add_dependency "activesupport", ">= 5.0"
 
   spec.add_development_dependency "appraisal", "~> 2.2"
   spec.add_development_dependency "kramdown-parser-gfm", "~> 1.0"
   spec.add_development_dependency "rouge", "~> 3.3"
-  spec.add_development_dependency "rspec-rails", "~> 3.8"
-  spec.add_development_dependency "sqlite3", "~> 1.3"
   spec.add_development_dependency "yard", "~> 0.9"
 end

@@ -1,3 +1,5 @@
+require 'json'
+
 module RescueRegistry
   class ExceptionHandler
     def self.default_status
@@ -42,10 +44,14 @@ module RescueRegistry
         when Proc
           @detail.call(exception)
         else
-          @detail.try(:to_s)
+          if @detail.respond_to?(:to_s)
+            val = @detail.to_s
+            # Don't return empty string
+            val.empty? ? nil : val
+          end
         end
 
-      detail.presence || default_detail_for_status
+      detail || default_detail_for_status
     end
 
     def meta
@@ -79,20 +85,25 @@ module RescueRegistry
       }
     end
 
-    def formatted_response(content_type, fallback: :json, **options)
+    # `content_type` should be an object with:
+    #   * `to_sym` returning sane name for the content_type (e.g. :jsonapi, :json, :xml, :html)
+    #   * `to_s` returning the content_type string (e.g. "application/vnd.api+json", "application/json", "text/xml", "text/html")
+    def formatted_response(content_type, fallback: :none, **options)
       body = build_payload(**options)
 
       # TODO: Maybe make a helper to register these types?
-      to_format = content_type == :jsonapi ? "to_json" : "to_#{content_type.to_sym}"
+      to_format = content_type.to_sym == :jsonapi ? "to_json" : "to_#{content_type.to_sym}"
 
       if content_type && body.respond_to?(to_format)
         formatted_body = body.public_send(to_format)
         format = content_type
       else
-        if fallback == :json
+        case fallback.to_sym
+        when :json
           formatted_body = body.to_json
-          format = Mime[:json]
-        elsif fallback == :none
+          # FIXME: This won't work without Rails
+          format = fallback
+        when :none
           return nil
         else
           raise ArgumentError, "unknown fallback=#{fallback}"
