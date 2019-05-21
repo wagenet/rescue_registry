@@ -3,7 +3,7 @@ module RescueRegistry
     extend ActiveSupport::Concern
 
     included do
-      cattr_accessor :rescue_registry
+      class_attribute :rescue_registry
       self.rescue_registry = Registry.new(self)
 
       class << self
