@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - 2019-05-22
+### Added
+- RescueRegistry::RailsTestingHelpers provides some helpers for easier testing in Rails applications.
+
 ## [0.2.0] - 2019-05-21
 ### Added
 - Support for non-Rails applications.

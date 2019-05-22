@@ -82,7 +82,7 @@ GIT
 PATH
   remote: ..
   specs:
-    rescue_registry (0.2.0)
+    rescue_registry (0.2.1)
       activesupport (>= 5.0)
 
 GEM
