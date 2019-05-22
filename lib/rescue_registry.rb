@@ -9,6 +9,7 @@ module RescueRegistry
   autoload :ExceptionsApp,         "rescue_registry/exceptions_app"
   autoload :ExceptionHandler,      "rescue_registry/exception_handler"
   autoload :RailsExceptionHandler, "rescue_registry/exception_handler"
+  autoload :RailsTestHelpers,      "rescue_registry/rails_test_helpers"
   autoload :Registry,              "rescue_registry/registry"
   autoload :ResetContext,          "rescue_registry/reset_context"
   autoload :ShowExceptions,        "rescue_registry/show_exceptions"
