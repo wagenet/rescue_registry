@@ -10,16 +10,16 @@ require 'rescue_registry/railtie'
 
 module RailsSpecHelpers
   def handle_request_exceptions(handle = true)
-    original_value = Rails.application.config.action_dispatch.handle_exceptions
+    original_value = Rails.application.config.action_dispatch.show_exceptions
 
-    Rails.application.config.action_dispatch.handle_exceptions = handle
+    Rails.application.config.action_dispatch.show_exceptions = handle
     # Also set this since it may have been cached
     Rails.application.env_config["action_dispatch.show_exceptions"] = handle
 
     yield
 
     Rails.application.env_config["action_dispatch.show_exceptions"] = original_value
-    Rails.application.config.action_dispatch.handle_exceptions = original_value
+    Rails.application.config.action_dispatch.show_exceptions = original_value
   end
 
   def show_detailed_exceptions(show = true)
