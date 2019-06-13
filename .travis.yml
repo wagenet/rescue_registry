@@ -20,5 +20,7 @@ matrix:
     - gemfile: gemfiles/rails_edge.gemfile
   fast_finish: true
 
-before_install: gem install bundler
+before_install:
+- if gem -v | grep -q "^2."; then gem update --system; fi
+- gem install bundler
 before_script: bundle exec rake db:setup
