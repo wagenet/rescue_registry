@@ -9,12 +9,7 @@ module RescueRegistry
       exception = request.get_header "action_dispatch.exception"
 
       if RescueRegistry.handles_exception?(exception)
-        begin
-          content_type = request.formats.first
-        rescue Mime::Type::InvalidMimeType
-          content_type = Mime[:text]
-        end
-
+        content_type = request.formats.first || Mime[:text]
         response = RescueRegistry.response_for_public(content_type, exception)
       end
 
