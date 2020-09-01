@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.3] - 2020-09-01
+### Fixed
+- Properly handle exceptions for invalid format types - #25 (thanks @shanet)
+
+### Changed
+- Lower minimum Ruby requirement to 2.3 (thanks @elDub)
+
 ## [0.2.2] - 2019-06-13
 ### Changed
 - Lower minimum Ruby requirement to 2.3 (thanks @elDub)
