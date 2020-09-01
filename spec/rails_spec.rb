@@ -170,6 +170,12 @@ if defined?(Rails)
         make_request("CustomStatusError", accept: :json, format: "invalid")
         expect(response.status).to eq(401)
       end
+
+      it "passes unhandled errors to default handler" do
+        make_request("StandardError", accept: :json, format: "invalid")
+        expect(response.status).to eq(500)
+        expect(response.body).to include("We're sorry, but something went wrong (500)"), "has standard Rails error message"
+      end
     end
   end
 end
