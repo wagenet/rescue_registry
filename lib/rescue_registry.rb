@@ -46,6 +46,18 @@ module RescueRegistry
       context.rescue_registry.public_send(method, *args)
     end
   end
+
+  # the Module#ruby2_keywords is added starting at ruby 2.7. It lets us mark
+  # these methods as using ruby2-style keyword argument semantics. This will
+  # keep them working correctly on ruby3, and clears a deprecation that
+  # otherwise fires in 2.7+.
+  if respond_to?(:ruby2_keywords, true)
+    class << self
+      REGISTRY_METHODS.each do |method|
+        ruby2_keywords(method)
+      end
+    end
+  end
 end
 
 ActiveSupport.on_load(:before_initialize) do
