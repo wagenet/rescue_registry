@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    rescue_registry (0.2.2)
+    rescue_registry (0.2.3)
       activesupport (>= 5.0)
 
 GEM
@@ -183,4 +183,4 @@ DEPENDENCIES
   yard (~> 0.9)
 
 BUNDLED WITH
-   2.1.0
+   2.1.4
