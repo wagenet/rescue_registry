@@ -1,5 +1,5 @@
 language: ruby
-rvm: 2.6
+rvm: 2.7
 
 gemfile:
   - gemfiles/rails_5.gemfile
@@ -12,6 +12,8 @@ matrix:
     - rvm: 2.3
       gemfile: gemfiles/rails_5.gemfile
     - rvm: 2.5
+      gemfile: gemfiles/rails_6.gemfile
+    - rvm: 2.6
       gemfile: gemfiles/rails_6.gemfile
     # Bleeding edge, unlocked
     - gemfile: gemfiles/rails_edge.gemfile
