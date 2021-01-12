@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.summary     = "Registry for Rails Exceptions"
   # spec.description = "TODO: Description of RescueRegistry"
   spec.license     = "MIT"
-  spec.required_ruby_version = "~> 2.3"
+  spec.required_ruby_version = [">= 2.3", "< 3.1"]
 
   spec.metadata = {
     "bug_tracker_uri"   => "https://github.com/wagenet/rescue_registry/issues",
