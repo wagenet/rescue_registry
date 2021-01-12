@@ -23,7 +23,7 @@ if defined?(Rails)
     it "uses custom renderer" do
       make_request("CustomStatusError", accept: :json)
       expect(response.status).to eq(401)
-      expect(response.content_type).to eq("application/json")
+      expect(response.content_type).to start_with("application/json")
       expect(JSON.parse(response.body)).to match(
         "errors" => [
           a_hash_including(
@@ -86,7 +86,7 @@ if defined?(Rails)
     it "can render in Rails style" do
       make_request("RailsError", accept: :json)
       expect(response.status).to eq(403)
-      expect(response.content_type).to eq("application/json")
+      expect(response.content_type).to start_with("application/json")
       expect(JSON.parse(response.body)).to match(
         a_hash_including(
           "status" => 403,
@@ -138,7 +138,7 @@ if defined?(Rails)
         make_request("CustomStatusError")
 
         expect(response.status).to eq(401)
-        expect(response.content_type).to eq("text/html")
+        expect(response.content_type).to start_with("text/html")
         expect(response.body).to include("You have to log in")
       end
 
@@ -146,7 +146,7 @@ if defined?(Rails)
         make_request("CustomStatusError", accept: :json)
 
         expect(response.status).to eq(401)
-        expect(response.content_type).to eq("application/json")
+        expect(response.content_type).to start_with("application/json")
         expect(response.body).to include("Unauthorized")
       end
 
@@ -154,7 +154,7 @@ if defined?(Rails)
         make_request("CustomStatusError", accept: :jsonapi)
 
         expect(response.status).to eq(401)
-        expect(response.content_type).to eq("application/vnd.api+json")
+        expect(response.content_type).to start_with("application/vnd.api+json")
         expect(JSON.parse(response.body)["errors"][0]["code"]).to eq("unauthorized")
       end
 
@@ -162,7 +162,7 @@ if defined?(Rails)
         make_request("CustomStatusError", accept: :png)
 
         expect(response.status).to eq(401)
-        expect(response.content_type).to eq("text/html")
+        expect(response.content_type).to start_with("text/html")
         expect(response.body).to include("You have to log in")
       end
 
