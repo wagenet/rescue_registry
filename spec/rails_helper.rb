@@ -11,5 +11,5 @@ require 'rescue_registry/railtie'
 RSpec.configure do |config|
   config.include RescueRegistry::RailsTestHelpers
 
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 end
