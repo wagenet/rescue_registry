@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.4] - 2021-01-22
+### Fixed
+- Support Ruby 3 (thanks @zvkemp and @ef4)
+
 ## [0.2.3] - 2020-09-01
 ### Fixed
 - Properly handle exceptions for invalid format types - #25 (thanks @shanet)
