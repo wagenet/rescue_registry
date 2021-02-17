@@ -20,6 +20,12 @@ if defined?(Rails)
       expect(response.status).to eq(401)
     end
 
+    it "set code in jsonapi error" do
+      make_request("CustomCodeError", accept: :json)
+      expect(response.status).to eq(401)
+      expect(JSON.parse(response.body).dig("errors", 0, "code")).to eq "invalid_credentials"
+    end
+
     it "uses custom renderer" do
       make_request("CustomStatusError", accept: :json)
       expect(response.status).to eq(401)

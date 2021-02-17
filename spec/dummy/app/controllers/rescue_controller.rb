@@ -1,5 +1,6 @@
 class RescueController < ApplicationController
   class CustomStatusError < StandardError; end
+  class CustomCodeError < StandardError; end
   class CustomTitleError < StandardError; end
   class DetailExceptionError < StandardError; end
   class DetailProcError < StandardError; end
@@ -21,6 +22,7 @@ class RescueController < ApplicationController
   end
 
   register_exception CustomStatusError, status: 401
+  register_exception CustomCodeError, status: 401, code: :invalid_credentials
   register_exception CustomTitleError, title: "My Title"
   register_exception DetailExceptionError, detail: :exception
   register_exception DetailProcError, detail: -> (e) { e.class.name.upcase }

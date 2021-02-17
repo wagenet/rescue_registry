@@ -58,6 +58,7 @@ class MyController < ActionController::Base
   register_exception MetaProcError, meta: -> (e) { { class_name: e.class.name.upcase } }
   register_exception CustomHandlerError, handler: CustomErrorHandler
   register_exception RailsError, status: 403, handler: RescueRegistry::RailsExceptionHandler
+  register_exception CustomStatusError, status: 422, code: :name_invalid
 end
 ```
 

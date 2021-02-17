@@ -21,6 +21,7 @@ module RescueRegistry
       end
 
       @meta = options[:meta]
+      @code = options[:code]
 
       # TODO: Warn about unrecognized options
     end
@@ -29,7 +30,7 @@ module RescueRegistry
     alias_method :status_code, :status
 
     def error_code
-      error_code_from_status
+      @code.presence || error_code_from_status
     end
 
     def title
