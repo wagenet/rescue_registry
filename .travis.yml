@@ -8,7 +8,7 @@ gemfile:
 matrix:
   include:
     # Oldest supported Rubies
-    - rvm: 2.3
+    - rvm: 2.5
       gemfile: gemfiles/rails_5.gemfile
     - rvm: 2.5
       gemfile: gemfiles/rails_6.gemfile
