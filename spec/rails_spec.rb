@@ -36,7 +36,6 @@ if defined?(Rails)
             "code" => "unauthorized",
             "status" => "401",
             "title" => "Unauthorized",
-            "detail" => nil,
             "meta" => {
               "__details__" => a_hash_including(
                 "exception" => a_string_including("CustomStatusError"),

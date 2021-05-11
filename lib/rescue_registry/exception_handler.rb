@@ -75,14 +75,20 @@ module RescueRegistry
         )
       end
 
+      error_payload = {
+        code: error_code,
+        status: status_code.to_s,
+        title: title
+      }
+
+      if (d = detail)
+        error_payload[:detail] = d
+      end
+
+      error_payload[:meta] = payload_meta if payload_meta.any?
+
       {
-        errors: [
-          code: error_code,
-          status: status_code.to_s,
-          title: title,
-          detail: detail,
-          meta: payload_meta
-        ]
+        errors: [error_payload]
       }
     end
 
