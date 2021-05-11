@@ -62,9 +62,7 @@ RSpec.describe "Rack App Usage" do
         {
           "code" => "forbidden",
           "status" => "403",
-          "title" => "Forbidden",
-          "detail" => nil,
-          "meta" => {}
+          "title" => "Forbidden"
         }
       ]
     })
