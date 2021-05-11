@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2021-05-11
+### Changed
+- For better JSONAPI spec compliance, errors payloads will not include the `details` key when value is `null`.
+- Error payloads will not include the `meta` key when value is an empty object.
+
 ## [0.2.5] - 2021-03-09
 ### Added
 - `code` can now be provided as an argument to `register_exception` - #29 (thanks @amaierhofer)

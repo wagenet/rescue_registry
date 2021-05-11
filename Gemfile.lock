@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rescue_registry (0.2.5)
+    rescue_registry (0.3.0)
       activesupport (>= 5.0)
 
 GEM
