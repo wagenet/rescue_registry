@@ -72,7 +72,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    appraisal (2.4.1)
+    appraisal (2.4.0)
       bundler
       rake
       thor (>= 0.14.0)
@@ -101,6 +101,7 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
+    mini_portile2 (2.7.1)
     minitest (5.15.0)
     net-imap (0.2.3)
       digest
@@ -118,7 +119,10 @@ GEM
       net-protocol
       timeout
     nio4r (2.5.8)
-    nokogiri (1.13.1-x86_64-darwin)
+    nokogiri (1.13.1)
+      mini_portile2 (~> 2.7.0)
+      racc (~> 1.4)
+    nokogiri (1.13.1-x86_64-linux)
       racc (~> 1.4)
     pry (0.14.1)
       coderay (~> 1.1)
@@ -156,9 +160,9 @@ GEM
       rake (>= 12.2)
       thor (~> 1.0)
       zeitwerk (~> 2.5)
-    rake (13.0.6)
+    rake (13.0.3)
     rexml (3.2.5)
-    rouge (3.27.0)
+    rouge (3.26.0)
     rspec-core (3.9.3)
       rspec-support (~> 3.9.3)
     rspec-expectations (3.9.4)
@@ -178,20 +182,20 @@ GEM
     rspec-support (3.9.4)
     sqlite3 (1.4.2)
     strscan (3.0.1)
-    thor (1.2.1)
+    thor (1.1.0)
     timeout (0.2.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
-    webrick (1.7.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    yard (0.9.27)
-      webrick (~> 1.7.0)
+    yard (0.9.26)
     zeitwerk (2.5.4)
 
 PLATFORMS
-  x86_64-darwin-21
+  ruby
+  x86_64-linux
+  x86_65-linux
 
 DEPENDENCIES
   appraisal (~> 2.2)
