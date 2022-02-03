@@ -20,10 +20,13 @@ jobs:
           - "2.6"
           - "2.7"
           - "3.0"
+          - "3.1"
         gemfile:
           - Gemfile
+          - gemfiles/rack.gemfile
           - gemfiles/rails_5.gemfile
           - gemfiles/rails_6.gemfile
+          - gemfiles/rails_7.gemfile
           - gemfiles/rails_edge.gemfile
         include:
           - ruby: ruby-head
@@ -32,7 +35,11 @@ jobs:
           # Rails 5 can't run on Ruby 3
           - gemfile: gemfiles/rails_5.gemfile
             ruby: 3.0
+          - gemfile: gemfiles/rails_5.gemfile
+            ruby: 3.1
           # Raise 7 can't run on 2.6
+          - gemfile: gemfiles/rails_7.gemfile
+            ruby: 2.6
           - gemfile: gemfiles/rails_edge.gemfile
             ruby: 2.6
     continue-on-error: ${{ matrix.ruby == 'ruby-head' || contains(matrix.gemfile, 'edge') }}
