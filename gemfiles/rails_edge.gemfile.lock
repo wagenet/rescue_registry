@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 61cf029f8269fe4214c54dd911f62c335371e6e8
+  revision: ed4d81caf7af6022c37a7e850f279ac77c29f120
   specs:
     actioncable (7.1.0.alpha)
       actionpack (= 7.1.0.alpha)
@@ -165,7 +165,7 @@ GEM
       loofah (~> 2.3)
     rake (13.0.6)
     rexml (3.2.5)
-    rouge (3.27.0)
+    rouge (3.28.0)
     rspec-core (3.9.3)
       rspec-support (~> 3.9.3)
     rspec-expectations (3.9.4)
@@ -199,6 +199,7 @@ GEM
 
 PLATFORMS
   ruby
+  x86_65-linux
 
 DEPENDENCIES
   appraisal (~> 2.2)
