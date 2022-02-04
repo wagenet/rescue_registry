@@ -7,5 +7,6 @@ gem "rspec-rails", "~> 3.8"
 gem "sqlite3", "~> 1.4.0"
 gem "pry"
 gem "pry-byebug"
+gem "net-smtp"
 
 gemspec path: "../"

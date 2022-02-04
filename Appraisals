@@ -8,6 +8,7 @@ appraise "rails-6" do
   gem "rails", "~> 6.0"
   gem "rspec-rails", "~> 3.8"
   gem "sqlite3", "~> 1.4.0"
+  gem "net-smtp" # For Ruby 3.1
 end
 
 appraise "rails-7" do
@@ -28,4 +29,6 @@ appraise "rack" do
   gem "rspec", "~> 3.8"
   # Allow for older Ruby usage
   gem "activesupport", "~> 6.0"
+  # For Ruby 3.1
+  gem "net-smtp"
 end
