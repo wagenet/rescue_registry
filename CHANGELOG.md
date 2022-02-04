@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.0] - 2022-02-03
+### Changed
+- Removed upper version bound to support Ruby 3.1. (thanks @nulldotpro)
+
 ## [0.3.0] - 2021-05-11
 ### Changed
 - For better JSONAPI spec compliance, errors payloads will not include the `details` key when value is `null`.
