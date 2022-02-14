@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: ed4d81caf7af6022c37a7e850f279ac77c29f120
+  revision: d5cf3b2c9848cd4d14aeabf592f01e8fc2e8b9eb
   specs:
     actioncable (7.1.0.alpha)
       actionpack (= 7.1.0.alpha)
@@ -92,7 +92,7 @@ GIT
 PATH
   remote: ..
   specs:
-    rescue_registry (0.3.0)
+    rescue_registry (1.0.0)
       activesupport (>= 5.0)
 
 GEM
@@ -119,7 +119,7 @@ GEM
       rexml
     kramdown-parser-gfm (1.1.0)
       kramdown (~> 2.0)
-    loofah (2.13.0)
+    loofah (2.14.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -214,4 +214,4 @@ DEPENDENCIES
   yard (~> 0.9)
 
 BUNDLED WITH
-   2.2.32
+   2.3.6
