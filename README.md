@@ -14,7 +14,7 @@ middleware to handle the exceptions but with our custom handlers.
 ### Better default exception handling
 Rails also has some built-in support for assigning different exception classes to status types (See `config.action_dispatch.rescue_responses`).
 Unfortunately, all this allows you to do is assign a status code. If you want more complex error handling, or to use different codes in
-different controllers, you're out of luck. With RescueRegistry you can register and exception with a custom handler or with different status
+different controllers, you're out of luck. With RescueRegistry you can register an exception with a custom handler or with different status
 codes in different controllers.
 
 ## In Action
